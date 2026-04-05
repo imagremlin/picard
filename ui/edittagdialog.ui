@@ -3,18 +3,18 @@
  <class>EditTagDialog</class>
  <widget class="QDialog" name="EditTagDialog">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModality::ApplicationModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>250</height>
+    <height>307</height>
    </rect>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::StrongFocus</enum>
+   <enum>Qt::FocusPolicy::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Edit Tag</string>
@@ -35,16 +35,16 @@
      <item>
       <widget class="QListWidget" name="value_list">
        <property name="focusPolicy">
-        <enum>Qt::StrongFocus</enum>
+        <enum>Qt::FocusPolicy::StrongFocus</enum>
        </property>
        <property name="tabKeyNavigation">
         <bool>false</bool>
        </property>
        <property name="dragDropMode">
-        <enum>QAbstractItemView::InternalMove</enum>
+        <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
        </property>
        <property name="movement">
-        <enum>QListView::Free</enum>
+        <enum>QListView::Movement::Free</enum>
        </property>
       </widget>
      </item>
@@ -117,12 +117,25 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="replace_in_values">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>100</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Replace in values</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Maximum</enum>
+          <enum>QSizePolicy::Policy::Maximum</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -144,8 +157,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme=":/images/16x16/go-up.png">
-           <normaloff>.</normaloff>.</iconset>
+          <iconset theme=":/images/16x16/go-up.png"/>
          </property>
         </widget>
        </item>
@@ -161,15 +173,14 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme=":/images/16x16/go-down.png">
-           <normaloff>.</normaloff>.</iconset>
+          <iconset theme=":/images/16x16/go-down.png"/>
          </property>
         </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -198,10 +209,10 @@
       </size>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

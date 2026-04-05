@@ -233,6 +233,7 @@ class EditTagDialog(PicardDialog):
         model.rowsInserted.connect(self.on_rows_inserted)
         model.rowsRemoved.connect(self.on_rows_removed)
         model.rowsMoved.connect(self.on_rows_moved)
+        self.ui.replace_in_values.clicked.connect(self.replace_in_values_clicked)
 
     def keyPressEvent(self, event):
         if event.modifiers() == QtCore.Qt.KeyboardModifier.NoModifier and event.key() in {
@@ -256,6 +257,18 @@ class EditTagDialog(PicardDialog):
         """
         self.add_or_edit_value()
 
+    def replace_in_values_clicked(self):
+        from picard.ui.metadatabox.replaceinvaluesdialog import ReplaceInValuesDialog
+
+        dialog = ReplaceInValuesDialog(self)
+        if dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+            replace_value = dialog.ui.replace_text.text()
+            with_value = dialog.ui.with_text.text()
+            item = self.value_list.currentItem()
+            item.setText("Replacing: '" + replace_value + "'")
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, (replace_value, with_value))
+
+    #
     def edit_value(self):
         """Start editing the currently selected value in the list."""
         item = self.value_list.currentItem()
@@ -482,12 +495,20 @@ class EditTagDialog(PicardDialog):
         """
         row = self.value_list.row(item)
         value = item.text()
+        data = item.data(QtCore.Qt.ItemDataRole.UserRole)
+
         if row == 0 and self.is_grouped:
-            self.modified_tags[self.tag] = [value]
+            if data:
+                self.modified_tags[self.tag] = [data]
+            else:
+                self.modified_tags[self.tag] = [value]
             self._group(False)
             self._set_item_style(item)
         else:
-            self._current_tag_values()[row] = value
+            if data:
+                self._current_tag_values()[row] = data
+            else:
+                self._current_tag_values()[row] = value
             # add tags to the completer model once they get values
             cm = self.completer.model()
             if self.tag not in cm.stringList():
@@ -537,8 +558,17 @@ class EditTagDialog(PicardDialog):
         """Update the metadata of all objects with the modified tags."""
         self._metadata_mutex.lock()
         try:
+            modified_tags = list(self._modified_tags_without_empty_values())
             for obj in self.metadata_box.objects:
-                obj.metadata.update(self._modified_tags_without_empty_values())
+                modified_tags_copy = []
+                for tag, values in modified_tags:
+                    original_values = obj.metadata[tag]
+                    if (len(values) == 1 and isinstance(values[0], tuple)) and isinstance(original_values, str):
+                        replace_value, with_value = values[0]
+                        modified_tags_copy.append((tag, [obj.metadata[tag].replace(replace_value, with_value).strip()]))
+                    else:
+                        modified_tags_copy.append((tag, values))
+                obj.metadata.update(modified_tags_copy)
                 obj.update()
         finally:
             self._metadata_mutex.unlock()

@@ -1,6 +1,6 @@
 # Form implementation generated from reading ui file 'ui/edittagdialog.ui'
 #
-# Created by: PyQt6 UI code generator 6.9.1
+# Created by: PyQt6 UI code generator 6.11.0
 #
 # Automatically generated - do not edit.
 # Use `python setup.py build_ui` to update it.
@@ -18,7 +18,7 @@ class Ui_EditTagDialog(object):
     def setupUi(self, EditTagDialog):
         EditTagDialog.setObjectName("EditTagDialog")
         EditTagDialog.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
-        EditTagDialog.resize(400, 250)
+        EditTagDialog.resize(400, 307)
         EditTagDialog.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         EditTagDialog.setModal(True)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(EditTagDialog)
@@ -68,6 +68,14 @@ class Ui_EditTagDialog(object):
         self.remove_value.setAutoDefault(False)
         self.remove_value.setObjectName("remove_value")
         self.verticalLayout.addWidget(self.remove_value)
+        self.replace_in_values = QtWidgets.QPushButton(parent=EditTagDialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(100)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.replace_in_values.sizePolicy().hasHeightForWidth())
+        self.replace_in_values.setSizePolicy(sizePolicy)
+        self.replace_in_values.setObjectName("replace_in_values")
+        self.verticalLayout.addWidget(self.replace_in_values)
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Maximum)
         self.verticalLayout.addItem(spacerItem)
         self.move_value_up = QtWidgets.QPushButton(parent=EditTagDialog)
@@ -99,17 +107,17 @@ class Ui_EditTagDialog(object):
         self.verticalLayout_2.addWidget(self.buttonbox)
 
         self.retranslateUi(EditTagDialog)
-        self.buttonbox.accepted.connect(EditTagDialog.accept)
-        self.buttonbox.rejected.connect(EditTagDialog.reject)
-        self.move_value_up.clicked.connect(EditTagDialog.move_row_up)
-        self.move_value_down.clicked.connect(EditTagDialog.move_row_down)
-        self.edit_value.clicked.connect(EditTagDialog.edit_value)
-        self.add_value.clicked.connect(EditTagDialog.add_value)
-        self.value_list.itemChanged['QListWidgetItem*'].connect(EditTagDialog.value_edited)
-        self.remove_value.clicked.connect(EditTagDialog.remove_value)
-        self.value_list.itemSelectionChanged.connect(EditTagDialog.value_selection_changed)
-        self.tag_names.editTextChanged['QString'].connect(EditTagDialog.tag_changed)
-        self.tag_names.activated['int'].connect(EditTagDialog.tag_selected)
+        self.buttonbox.accepted.connect(EditTagDialog.accept) # type: ignore
+        self.buttonbox.rejected.connect(EditTagDialog.reject) # type: ignore
+        self.move_value_up.clicked.connect(EditTagDialog.move_row_up) # type: ignore
+        self.move_value_down.clicked.connect(EditTagDialog.move_row_down) # type: ignore
+        self.edit_value.clicked.connect(EditTagDialog.edit_value) # type: ignore
+        self.add_value.clicked.connect(EditTagDialog.add_value) # type: ignore
+        self.value_list.itemChanged['QListWidgetItem*'].connect(EditTagDialog.value_edited) # type: ignore
+        self.remove_value.clicked.connect(EditTagDialog.remove_value) # type: ignore
+        self.value_list.itemSelectionChanged.connect(EditTagDialog.value_selection_changed) # type: ignore
+        self.tag_names.editTextChanged['QString'].connect(EditTagDialog.tag_changed) # type: ignore
+        self.tag_names.activated['int'].connect(EditTagDialog.tag_selected) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(EditTagDialog)
         EditTagDialog.setTabOrder(self.tag_names, self.value_list)
         EditTagDialog.setTabOrder(self.value_list, self.edit_value)
@@ -122,6 +130,7 @@ class Ui_EditTagDialog(object):
         self.edit_value.setText(_("Edit value"))
         self.add_value.setText(_("Add value"))
         self.remove_value.setText(_("Remove value"))
+        self.replace_in_values.setText(_("Replace in values"))
         self.move_value_up.setToolTip(_("Move selected value up"))
         self.move_value_up.setAccessibleDescription(_("Move selected value up"))
         self.move_value_down.setToolTip(_("Move selected value down"))
