@@ -266,8 +266,8 @@ class EditTagDialog(PicardDialog):
             replace_value = dialog.ui.replace_text.text()
             with_value = dialog.ui.with_text.text()
             item = self.value_list.currentItem()
-            item.setText("Replacing: '" + replace_value + "'")
             item.setData(QtCore.Qt.ItemDataRole.UserRole, (replace_value, with_value))
+            item.setText("Replacing: '" + replace_value + "'")
 
     #
     def edit_value(self):
@@ -501,9 +501,10 @@ class EditTagDialog(PicardDialog):
         if row == 0 and self.is_grouped:
             if data:
                 self.modified_tags[self.tag] = [data]
+                self._group(True)
             else:
                 self.modified_tags[self.tag] = [value]
-            self._group(False)
+                self._group(False)
             self._set_item_style(item)
         else:
             if data:
