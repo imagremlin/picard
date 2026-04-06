@@ -267,7 +267,7 @@ class EditTagDialog(PicardDialog):
             with_value = dialog.ui.with_text.text()
             item = self.value_list.currentItem()
             item.setData(QtCore.Qt.ItemDataRole.UserRole, (replace_value, with_value))
-            item.setText("Replacing: '" + replace_value + "'")
+            item.setText(_("Replacing: '") + replace_value + "'")
 
     #
     def edit_value(self):
