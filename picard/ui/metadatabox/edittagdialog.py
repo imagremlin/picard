@@ -198,6 +198,7 @@ class EditTagDialog(PicardDialog):
         self._setup_tag_combobox()
         self._setup_value_list()
         self._connect_signals()
+        self.ui.replace_in_values.setEnabled(self.multiple_files_selected())
 
     def _setup_tag_combobox(self):
         """Set up the tag name combobox with supported tags."""
@@ -563,7 +564,7 @@ class EditTagDialog(PicardDialog):
                 modified_tags_copy = []
                 for tag, values in modified_tags:
                     original_values = obj.metadata[tag]
-                    if (len(values) == 1 and isinstance(values[0], tuple)) and isinstance(original_values, str):
+                    if self.is_replace_in_values(values, original_values):
                         replace_value, with_value = values[0]
                         modified_tags_copy.append((tag, [obj.metadata[tag].replace(replace_value, with_value).strip()]))
                     else:
@@ -572,6 +573,17 @@ class EditTagDialog(PicardDialog):
                 obj.update()
         finally:
             self._metadata_mutex.unlock()
+
+    def is_replace_in_values(self, values, original_values):
+        """Check if the operation is for replacing text in values.
+
+        Returns:
+            bool: True if the action is active, False otherwise
+        """
+        return bool((len(values) == 1 and isinstance(values[0], tuple)) and isinstance(original_values, str))
+
+    def multiple_files_selected(self):
+        return len(self.metadata_box.objects) > 1
 
     def accept(self):
         """Save the modified tags and close the dialog."""
