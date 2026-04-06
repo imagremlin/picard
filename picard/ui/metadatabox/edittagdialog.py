@@ -45,6 +45,7 @@ from picard.util import temporary_disconnect
 
 from picard.ui import PicardDialog
 from picard.ui.forms.ui_edittagdialog import Ui_EditTagDialog
+from picard.ui.metadatabox.replaceinvaluesdialog import ReplaceInValuesDialog
 
 
 AUTOCOMPLETE_RELEASE_TYPES = [s.lower() for s in sorted(RELEASE_PRIMARY_GROUPS) + sorted(RELEASE_SECONDARY_GROUPS)]
@@ -259,8 +260,7 @@ class EditTagDialog(PicardDialog):
         self.add_or_edit_value()
 
     def replace_in_values_clicked(self):
-        from picard.ui.metadatabox.replaceinvaluesdialog import ReplaceInValuesDialog
-
+        """Open the replace in values dialog."""
         dialog = ReplaceInValuesDialog(self)
         if dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             replace_value = dialog.ui.replace_text.text()
@@ -269,7 +269,6 @@ class EditTagDialog(PicardDialog):
             item.setData(QtCore.Qt.ItemDataRole.UserRole, (replace_value, with_value))
             item.setText(_("Replacing: '") + replace_value + "'")
 
-    #
     def edit_value(self):
         """Start editing the currently selected value in the list."""
         item = self.value_list.currentItem()
@@ -279,6 +278,7 @@ class EditTagDialog(PicardDialog):
             if self.value_list.isPersistentEditorOpen(item):
                 return
             self.value_list.editItem(item)
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, None)
 
     def add_value(self):
         """Add a new empty value to the value list and start editing it."""
