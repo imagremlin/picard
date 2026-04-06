@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Replace in values</string>
+   <string>Replace in Values</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">

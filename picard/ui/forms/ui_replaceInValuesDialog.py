@@ -48,6 +48,6 @@ class Ui_ReplaceInValuesDialog(object):
         QtCore.QMetaObject.connectSlotsByName(ReplaceInValuesDialog)
 
     def retranslateUi(self, ReplaceInValuesDialog):
-        ReplaceInValuesDialog.setWindowTitle(_("Replace in values"))
+        ReplaceInValuesDialog.setWindowTitle(_("Replace in Values"))
         self.label.setText(_("Replace"))
         self.label_2.setText(_("With"))
