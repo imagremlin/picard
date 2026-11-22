@@ -43,6 +43,7 @@ from picard.util.qt import temporary_disconnect
 
 from picard.ui import PicardDialog
 from picard.ui.forms.ui_edittagdialog import Ui_EditTagDialog
+from picard.ui.metadatabox.replaceinvaluesdialog import ReplaceInValuesDialog
 
 
 AUTOCOMPLETE_RELEASE_TYPES = [s.lower() for s in sorted(RELEASE_PRIMARY_GROUPS) + sorted(RELEASE_SECONDARY_GROUPS)]
@@ -196,6 +197,7 @@ class EditTagDialog(PicardDialog):
         self._setup_tag_combobox()
         self._setup_value_list()
         self._connect_signals()
+        self.ui.replace_in_values.setEnabled(self.multiple_files_selected())
 
     def _setup_tag_combobox(self):
         """Set up the tag name combobox with supported tags."""
@@ -231,6 +233,7 @@ class EditTagDialog(PicardDialog):
         model.rowsInserted.connect(self.on_rows_inserted)
         model.rowsRemoved.connect(self.on_rows_removed)
         model.rowsMoved.connect(self.on_rows_moved)
+        self.ui.replace_in_values.clicked.connect(self.replace_in_values_clicked)
 
     def keyPressEvent(self, event):
         if event.modifiers() == QtCore.Qt.KeyboardModifier.NoModifier and event.key() in {
@@ -254,6 +257,16 @@ class EditTagDialog(PicardDialog):
         """
         self.add_or_edit_value()
 
+    def replace_in_values_clicked(self):
+        """Open the replace in values dialog."""
+        dialog = ReplaceInValuesDialog(self)
+        if dialog.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+            replace_value = dialog.ui.replace_text.text()
+            with_value = dialog.ui.with_text.text()
+            item = self.value_list.currentItem()
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, (replace_value, with_value))
+            item.setText(_("Replacing: '") + replace_value + "'")
+
     def edit_value(self):
         """Start editing the currently selected value in the list."""
         item = self.value_list.currentItem()
@@ -263,6 +276,7 @@ class EditTagDialog(PicardDialog):
             if self.value_list.isPersistentEditorOpen(item):
                 return
             self.value_list.editItem(item)
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, None)
 
     def add_value(self):
         """Add a new empty value to the value list and start editing it."""
@@ -480,12 +494,21 @@ class EditTagDialog(PicardDialog):
         """
         row = self.value_list.row(item)
         value = item.text()
+        data = item.data(QtCore.Qt.ItemDataRole.UserRole)
+
         if row == 0 and self.is_grouped:
-            self.modified_tags[self.tag] = [value]
-            self._group(False)
+            if data:
+                self.modified_tags[self.tag] = [data]
+                self._group(True)
+            else:
+                self.modified_tags[self.tag] = [value]
+                self._group(False)
             self._set_item_style(item)
         else:
-            self._current_tag_values()[row] = value
+            if data:
+                self._current_tag_values()[row] = data
+            else:
+                self._current_tag_values()[row] = value
             # add tags to the completer model once they get values
             cm = self.completer.model()
             if self.tag not in cm.stringList():
@@ -535,11 +558,31 @@ class EditTagDialog(PicardDialog):
         """Update the metadata of all objects with the modified tags."""
         self._metadata_mutex.lock()
         try:
+            modified_tags = list(self._modified_tags_without_empty_values())
             for obj in self.metadata_box.objects:
-                obj.metadata.update(self._modified_tags_without_empty_values())
+                modified_tags_copy = []
+                for tag, values in modified_tags:
+                    original_values = obj.metadata[tag]
+                    if self.is_replace_in_values(values, original_values):
+                        replace_value, with_value = values[0]
+                        modified_tags_copy.append((tag, [obj.metadata[tag].replace(replace_value, with_value).strip()]))
+                    else:
+                        modified_tags_copy.append((tag, values))
+                obj.metadata.update(modified_tags_copy)
                 obj.update()
         finally:
             self._metadata_mutex.unlock()
+
+    def is_replace_in_values(self, values, original_values):
+        """Check if the operation is for replacing text in values.
+
+        Returns:
+            bool: True if the action is active, False otherwise
+        """
+        return bool((len(values) == 1 and isinstance(values[0], tuple)) and isinstance(original_values, str))
+
+    def multiple_files_selected(self):
+        return len(self.metadata_box.objects) > 1
 
     def accept(self):
         """Save the modified tags and close the dialog."""
