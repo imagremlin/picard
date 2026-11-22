@@ -44,6 +44,7 @@
 
 
 from functools import partial
+from pathlib import Path
 
 from PyQt6 import (
     QtCore,
@@ -661,7 +662,35 @@ class BaseTreeView(QtWidgets.QTreeWidget):
         if event.isAccepted() and event.source() and event.source() is not self:
             self.window.tutorial.show('drag_drop')
 
+    def _try_reorder(self, parent, index, urls):
+        log.debug("IMG!: _try_reorder called with parent=%r, index=%r, urls=%r", parent, index, urls)
+        if parent is None or index < 0:
+            return False
+        cluster = getattr(parent, 'obj', None)
+        if not isinstance(cluster, Cluster):
+            return False
+        paths = {Path(u.toLocalFile()) for u in urls}
+        moving = [f for f in cluster.files if Path(f.filename) in paths]
+        if not moving or len(moving) != len(paths):
+            return False
+        index -= sum(1 for f in cluster.files[:index] if f in moving)
+        remaining = [f for f in cluster.files if f not in moving]
+        new_order = remaining[:index] + moving + remaining[index:]
+        log.debug("IMG!: reorder -> %r", [f.filename for f in new_order])
+        QtCore.QTimer.singleShot(0, partial(self._apply_order, parent, cluster, new_order))
+        return True
+
+    def _apply_order(self, parent, cluster, new_order):
+        log.debug("IMG!: sorting=%r, sortColumn=%r", self.isSortingEnabled(), self.sortColumn())
+        cluster.files[:] = new_order
+        items = parent.takeChildren()
+        self.setSortingEnabled(False)
+        log.debug("IMG!: after disable sorting=%r, sortColumn=%r", self.isSortingEnabled(), self.sortColumn())
+        by_obj = {item.obj: item for item in items}
+        parent.addChildren([by_obj[f] for f in new_order])
+
     def dropMimeData(self, parent, index, data, action):
+        log.debug("IMG!: dropMimeData called with parent=%r, index=%r, data=%r, action=%r", parent, index, data, action)
         target = None
         if parent:
             if index == parent.childCount():
@@ -677,12 +706,16 @@ class BaseTreeView(QtWidgets.QTreeWidget):
         # text/uri-list
         urls = data.urls()
         if urls:
+            if self._try_reorder(parent, index, urls):
+                self._move_to_multi_tracks = True
+                return True
             # Use QTimer.singleShot to run expensive processing outside of the drop handler.
             QtCore.QTimer.singleShot(0, partial(self.drop_urls, urls, target, self._move_to_multi_tracks))
             handled = True
         # application/picard.album-list
         albums = data.data('application/picard.album-list')
         if albums:
+            log.debug("IMG!: Dropped albums data = %r", albums)
             album_ids = bytes(albums).decode().split("\n")
             log.debug("Dropped albums = %r", album_ids)
             files = iter_files_from_objects(self.tagger.load_album(id) for id in album_ids)
