@@ -1436,7 +1436,6 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         return clusters[0] if len(clusters) == 1 else None
 
     def autonumber(self):
-        log.debug("IMG!: Autonumber action triggered")
         cluster = self._get_target_cluster()
         if cluster is None:
             return
