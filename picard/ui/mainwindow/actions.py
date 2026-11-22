@@ -78,6 +78,13 @@ def create_actions(parent):
         yield (action_name, action(parent))
 
 
+@add_action(MainAction.AUTONUMBER)
+def _create_reorder_action(parent):
+    action = create_qaction(_("&Autonumber…"), icontheme.lookup('preferences-desktop'), parent)
+    action.triggered.connect(parent.autonumber)
+    return action
+
+
 @add_action(MainAction.OPTIONS)
 def _create_options_action(parent):
     action = create_qaction(_("&Options…"), icontheme.lookup('preferences-desktop'), parent)

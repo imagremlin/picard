@@ -1422,6 +1422,31 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
     def show_about(self):
         return AboutDialog.show_instance(self)
 
+    def _get_target_cluster(self):
+        clusters = []
+        for obj in self.selected_objects:
+            if isinstance(obj, Cluster):
+                cluster = obj
+            elif isinstance(obj, File) and isinstance(obj.parent_item, Cluster):
+                cluster = obj.parent_item
+            else:
+                continue
+            if cluster not in clusters:
+                clusters.append(cluster)
+        return clusters[0] if len(clusters) == 1 else None
+
+    def autonumber(self):
+        log.debug("IMG!: Autonumber action triggered")
+        cluster = self._get_target_cluster()
+        if cluster is None:
+            return
+        total = len(cluster.files)
+        for i, file in enumerate(cluster.files, start=1):
+            file.metadata['tracknumber'] = str(i)
+            file.update()
+        file.metadata['totaltracks'] = str(total)
+        file.update()
+
     def show_options(self, page=None):
         ReadTheDocs.update_documentation_items()  # Retry updates if required
         options_dialog = OptionsDialog.show_instance(page, self)

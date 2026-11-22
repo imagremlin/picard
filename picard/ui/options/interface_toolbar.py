@@ -156,6 +156,10 @@ class InterfaceToolbarOptionsPage(OptionsPage):
             N_("Similar items"),
             'system-search',
         ),
+        MainAction.AUTONUMBER: ToolbarButtonDesc(
+            N_("Autonumber"),
+            'preferences-desktop',
+        ),
     }
     ACTION_IDS: ClassVar[set[MainAction]] = set(TOOLBAR_BUTTONS)
 
