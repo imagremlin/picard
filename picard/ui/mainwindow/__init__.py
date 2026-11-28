@@ -1441,6 +1441,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
             return
         total = len(cluster.files)
         for i, file in enumerate(cluster.files, start=1):
+            log.debug("IMG! Autonumbering file: %s", file)
             file.metadata['tracknumber'] = str(i)
             file.update()
         file.metadata['totaltracks'] = str(total)
@@ -1929,12 +1930,14 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         can_refresh = False
         can_autotag = False
         can_submit = False
+        can_autonumber = False
         single = self.selected_objects[0] if len(self.selected_objects) == 1 else None
         can_view_info = bool(single and single.can_view_info)
         can_browser_lookup = bool(single and single.can_browser_lookup)
         is_file = bool(single and isinstance(single, (File, Track)))
         is_album = bool(single and isinstance(single, Album))
         is_cluster = bool(single and isinstance(single, Cluster) and not single.special)
+        can_autonumber = len(self.selected_objects) != 0
 
         if not self.selected_objects:
             have_objects = have_files = False
@@ -1985,6 +1988,7 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
         self.enable_action(MainAction.ALBUM_SEARCH, is_cluster)
         self.enable_action(MainAction.LOOKUP_ISRC, have_files)
         self.enable_action(MainAction.ALBUM_OTHER_VERSIONS, is_album)
+        self.enable_action(MainAction.AUTONUMBER, can_autonumber)
 
     def enable_action(self, action_id, enabled):
         if self.action_map[action_id]:
