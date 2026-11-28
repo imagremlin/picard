@@ -8,6 +8,8 @@
     <file>images/16x16/add-item@2x.png</file>
     <file>images/16x16/applications-system.png</file>
     <file>images/16x16/applications-system@2x.png</file>
+    <file>images/16x16/autonumber.png</file>
+    <file>images/16x16/autonumber@2x.png</file>
     <file>images/16x16/dialog-error.png</file>
     <file>images/16x16/dialog-error@2x.png</file>
     <file>images/16x16/document-open.png</file>
@@ -123,6 +125,8 @@
     <file>images/16x16/view-refresh@2x.png</file>
     <file>images/22x22/acoustid-fingerprinter.png</file>
     <file>images/22x22/acoustid-fingerprinter@2x.png</file>
+    <file>images/22x22/autonumber.png</file>
+    <file>images/22x22/autonumber@2x.png</file>
     <file>images/22x22/dialog-error.png</file>
     <file>images/22x22/dialog-error@2x.png</file>
     <file>images/22x22/document-open.png</file>

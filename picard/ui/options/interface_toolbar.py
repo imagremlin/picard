@@ -158,7 +158,7 @@ class InterfaceToolbarOptionsPage(OptionsPage):
         ),
         MainAction.AUTONUMBER: ToolbarButtonDesc(
             N_("Autonumber"),
-            'preferences-desktop',
+            'autonumber',
         ),
     }
     ACTION_IDS: ClassVar[set[MainAction]] = set(TOOLBAR_BUTTONS)

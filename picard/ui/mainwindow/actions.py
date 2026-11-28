@@ -80,7 +80,8 @@ def create_actions(parent):
 
 @add_action(MainAction.AUTONUMBER)
 def _create_reorder_action(parent):
-    action = create_qaction(_("&Autonumber…"), icontheme.lookup('preferences-desktop'), parent)
+    action = create_qaction(_("&Autonumber…"), icontheme.lookup('autonumber'), parent)
+    action.setEnabled(False)
     action.triggered.connect(parent.autonumber)
     return action
 
