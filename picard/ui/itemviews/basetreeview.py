@@ -662,6 +662,10 @@ class BaseTreeView(QtWidgets.QTreeWidget):
         if event.isAccepted() and event.source() and event.source() is not self:
             self.window.tutorial.show('drag_drop')
 
+    def _files_in_display_order(self, cluster):
+        item = cluster.ui_item
+        return [item.child(i).obj for i in range(item.childCount())]
+
     def _try_reorder(self, parent, index, urls):
         if parent is None or index < 0:
             return False
@@ -669,11 +673,12 @@ class BaseTreeView(QtWidgets.QTreeWidget):
         if not isinstance(cluster, Cluster):
             return False
         paths = {Path(u.toLocalFile()) for u in urls}
-        moving = [f for f in cluster.files if Path(f.filename) in paths]
+        current = self._files_in_display_order(cluster)
+        moving = [f for f in current if Path(f.filename) in paths]
         if not moving or len(moving) != len(paths):
             return False
-        index -= sum(1 for f in cluster.files[:index] if f in moving)
-        remaining = [f for f in cluster.files if f not in moving]
+        index -= sum(1 for f in current[:index] if f in moving)
+        remaining = [f for f in current if f not in moving]
         new_order = remaining[:index] + moving + remaining[index:]
         QtCore.QTimer.singleShot(0, partial(self._apply_order, parent, cluster, new_order))
         return True

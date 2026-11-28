@@ -1435,13 +1435,16 @@ class MainWindow(QtWidgets.QMainWindow, PreserveGeometry):
                 clusters.append(cluster)
         return clusters[0] if len(clusters) == 1 else None
 
+    def _files_in_display_order(self, cluster):
+        item = cluster.ui_item
+        return [item.child(i).obj for i in range(item.childCount())]
+
     def autonumber(self):
         cluster = self._get_target_cluster()
         if cluster is None:
             return
         total = len(cluster.files)
-        for i, file in enumerate(cluster.files, start=1):
-            log.debug("IMG! Autonumbering file: %s", file)
+        for i, file in enumerate(self._files_in_display_order(cluster), start=1):
             file.metadata['tracknumber'] = str(i)
             file.update()
         file.metadata['totaltracks'] = str(total)
